@@ -16,9 +16,6 @@
 
 package org.springframework.context;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 /**
  * @author Juergen Hoeller
  */
@@ -32,7 +29,7 @@ public class BeanThatBroadcasts implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-		if (applicationContext.getDisplayName().indexOf("listener") != -1) {
+		if (applicationContext.getDisplayName().contains("listener")) {
 			applicationContext.getBean("listener");
 		}
 	}

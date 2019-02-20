@@ -16,11 +16,12 @@
 
 package org.springframework.aop.aspectj;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for overloaded advice.
@@ -28,7 +29,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author Adrian Colyer
  * @author Chris Beams
  */
-public final class OverloadedAdviceTests {
+public class OverloadedAdviceTests {
 
 	@Test
 	public void testExceptionOnConfigParsingWithMismatchedAdviceMethod() {
@@ -39,7 +40,7 @@ public final class OverloadedAdviceTests {
 			Throwable cause = ex.getRootCause();
 			assertTrue("Should be IllegalArgumentException", cause instanceof IllegalArgumentException);
 			assertTrue("invalidAbsoluteTypeName should be detected by AJ",
-					cause.getMessage().indexOf("invalidAbsoluteTypeName") != -1);
+					cause.getMessage().contains("invalidAbsoluteTypeName"));
 		}
 	}
 
@@ -52,7 +53,7 @@ public final class OverloadedAdviceTests {
 			Throwable cause = ex.getRootCause();
 			assertTrue("Should be IllegalArgumentException", cause instanceof IllegalArgumentException);
 			assertTrue("Cannot resolve method 'myBeforeAdvice' to a unique method",
-					cause.getMessage().indexOf("Cannot resolve method 'myBeforeAdvice' to a unique method") != -1);
+					cause.getMessage().contains("Cannot resolve method 'myBeforeAdvice' to a unique method"));
 		}
 	}
 

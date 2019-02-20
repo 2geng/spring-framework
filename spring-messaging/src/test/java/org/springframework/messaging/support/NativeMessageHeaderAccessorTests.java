@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2014 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,19 +19,18 @@ package org.springframework.messaging.support;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.messaging.Message;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test fixture for {@link NativeMessageHeaderAccessor}.
@@ -65,7 +64,7 @@ public class NativeMessageHeaderAccessorTests {
 		inputNativeHeaders.add("foo", "bar");
 		inputNativeHeaders.add("bar", "baz");
 
-		Map<String, Object> inputHeaders = new HashMap<String, Object>();
+		Map<String, Object> inputHeaders = new HashMap<>();
 		inputHeaders.put("a", "b");
 		inputHeaders.put(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
 
@@ -87,7 +86,6 @@ public class NativeMessageHeaderAccessorTests {
 		Map<String, Object> actual = headerAccessor.toMap();
 		assertEquals(0, actual.size());
 
-		@SuppressWarnings("unchecked")
 		Map<String, List<String>> actualNativeHeaders = headerAccessor.toNativeHeaderMap();
 		assertEquals(Collections.emptyMap(), actualNativeHeaders);
 	}
@@ -99,7 +97,7 @@ public class NativeMessageHeaderAccessorTests {
 		inputNativeHeaders.add("foo", "bar");
 		inputNativeHeaders.add("bar", "baz");
 
-		Map<String, Object> nativeHeaders = new HashMap<String, Object>();
+		Map<String, Object> nativeHeaders = new HashMap<>();
 		nativeHeaders.put("a", "b");
 		nativeHeaders.put(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
 

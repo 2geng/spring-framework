@@ -1,11 +1,11 @@
 /*
- * Copyright 2002-2014 the original author or authors.
+ * Copyright 2002-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,13 @@
 package org.springframework.messaging.simp.stomp;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -31,11 +33,11 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.AlternativeJdkIdGenerator;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.MultiValueMap;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link StompHeaderAccessor}.
@@ -45,20 +47,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class StompHeaderAccessorTests {
 
-
 	@Test
 	public void createWithCommand() {
-
 		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECTED);
 		assertEquals(StompCommand.CONNECTED, accessor.getCommand());
 
-		accessor = StompHeaderAccessor.create(StompCommand.CONNECTED, new LinkedMultiValueMap<String, String>());
+		accessor = StompHeaderAccessor.create(StompCommand.CONNECTED, new LinkedMultiValueMap<>());
 		assertEquals(StompCommand.CONNECTED, accessor.getCommand());
 	}
 
 	@Test
 	public void createWithSubscribeNativeHeaders() {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.STOMP_ID_HEADER, "s1");
 		extHeaders.add(StompHeaderAccessor.STOMP_DESTINATION_HEADER, "/d");
@@ -73,7 +72,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void createWithUnubscribeNativeHeaders() {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.STOMP_ID_HEADER, "s1");
 
@@ -86,7 +84,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void createWithMessageFrameNativeHeaders() {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.DESTINATION_HEADER, "/d");
 		extHeaders.add(StompHeaderAccessor.STOMP_SUBSCRIPTION_HEADER, "s1");
@@ -101,7 +98,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void createWithConnectNativeHeaders() {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.STOMP_LOGIN_HEADER, "joe");
 		extHeaders.add(StompHeaderAccessor.STOMP_PASSCODE_HEADER, "joe123");
@@ -122,7 +118,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void toNativeHeadersSubscribe() {
-
 		StompHeaderAccessor headers = StompHeaderAccessor.create(StompCommand.SUBSCRIBE);
 		headers.setSubscriptionId("s1");
 		headers.setDestination("/d");
@@ -136,7 +131,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void toNativeHeadersUnsubscribe() {
-
 		StompHeaderAccessor headers = StompHeaderAccessor.create(StompCommand.UNSUBSCRIBE);
 		headers.setSubscriptionId("s1");
 
@@ -148,7 +142,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void toNativeHeadersMessageFrame() {
-
 		StompHeaderAccessor headers = StompHeaderAccessor.create(StompCommand.MESSAGE);
 		headers.setSubscriptionId("s1");
 		headers.setDestination("/d");
@@ -166,9 +159,8 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void toNativeHeadersContentType() {
-
 		SimpMessageHeaderAccessor simpHeaderAccessor = SimpMessageHeaderAccessor.create();
-		simpHeaderAccessor.setContentType(MimeTypeUtils.APPLICATION_ATOM_XML);
+		simpHeaderAccessor.setContentType(MimeType.valueOf("application/atom+xml"));
 		Message<byte[]> message = MessageBuilder.createMessage(new byte[0], simpHeaderAccessor.getMessageHeaders());
 
 		StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(message);
@@ -179,7 +171,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void encodeConnectWithLoginAndPasscode() throws UnsupportedEncodingException {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.STOMP_LOGIN_HEADER, "joe");
 		extHeaders.add(StompHeaderAccessor.STOMP_PASSCODE_HEADER, "joe123");
@@ -193,7 +184,6 @@ public class StompHeaderAccessorTests {
 
 	@Test
 	public void modifyCustomNativeHeader() {
-
 		MultiValueMap<String, String> extHeaders = new LinkedMultiValueMap<>();
 		extHeaders.add(StompHeaderAccessor.STOMP_ID_HEADER, "s1");
 		extHeaders.add(StompHeaderAccessor.STOMP_DESTINATION_HEADER, "/d");
@@ -239,6 +229,24 @@ public class StompHeaderAccessorTests {
 		Message<byte[]> message = MessageBuilder.createMessage(new byte[0], headerAccessor.getMessageHeaders());
 
 		assertSame(headerAccessor, MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class));
+	}
+
+	@Test
+	public void getShortLogMessage() {
+		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.SEND);
+		accessor.setDestination("/foo");
+		accessor.setContentType(MimeTypeUtils.APPLICATION_JSON);
+		accessor.setSessionId("123");
+		String actual = accessor.getShortLogMessage("payload".getBytes(StandardCharsets.UTF_8));
+		assertEquals("SEND /foo session=123 application/json payload=payload", actual);
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 80; i++) {
+			sb.append("a");
+		}
+		final String payload = sb.toString() + " > 80";
+		actual = accessor.getShortLogMessage(payload.getBytes(StandardCharsets.UTF_8));
+		assertEquals("SEND /foo session=123 application/json payload=" + sb + "...(truncated)", actual);
 	}
 
 }
