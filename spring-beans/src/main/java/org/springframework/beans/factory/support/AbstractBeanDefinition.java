@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
 /**
  * Base class for concrete, full-fledged
  * {@link org.springframework.beans.factory.config.BeanDefinition} classes,
- * factoring out common properties of {@link RootBeanDefinition} and
- * {@link ChildBeanDefinition}.
+ * factoring out common properties of {@link GenericBeanDefinition},
+ * {@link RootBeanDefinition} and {@link ChildBeanDefinition}.
  *
  * <p>The autowire constants match the ones defined in the
  * {@link org.springframework.beans.factory.config.AutowireCapableBeanFactory}
@@ -123,11 +123,14 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	public static final int DEPENDENCY_CHECK_ALL = 3;
 
 	/**
-	 * Constant that indicates the container should attempt to infer the {@link
-	 * #setDestroyMethodName destroy method name} for a bean as opposed to explicit
-	 * specification of a method name. The value {@value} is specifically designed to
-	 * include characters otherwise illegal in a method name, ensuring no possibility of
-	 * collisions with legitimately named methods having the same name.
+	 * Constant that indicates the container should attempt to infer the
+	 * {@link #setDestroyMethodName destroy method name} for a bean as opposed to
+	 * explicit specification of a method name. The value {@value} is specifically
+	 * designed to include characters otherwise illegal in a method name, ensuring
+	 * no possibility of collisions with legitimately named methods having the same
+	 * name.
+	 * <p>Currently, the method names detected during destroy method inference
+	 * are "close" and "shutdown", if present on the specific bean class.
 	 */
 	public static final String INFER_METHOD = "(inferred)";
 
@@ -644,8 +647,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	/**
 	 * Specify whether to allow access to non-public constructors and methods,
-	 * for the case of externalized metadata pointing to those.
-	 * The default is {@code true}; switch this to {@false} for public access only.
+	 * for the case of externalized metadata pointing to those. The default is
+	 * {@code true}; switch this to {@code false} for public access only.
 	 * <p>This applies to constructor resolution, factory method resolution,
 	 * and also init/destroy methods. Bean property accessors have to be public
 	 * in any case and are not affected by this setting.
